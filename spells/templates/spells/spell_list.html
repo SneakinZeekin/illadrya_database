@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Illadrya Database</title>
+    <style>
+        body {
+            background-color: #181a1b;
+            color: #dddddd;
+        }
+
+        .spell-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .spell-card {
+            display: grid;
+            grid-template-columns: 50px 100px 2fr 1fr 1fr 1fr 50px;
+            align-items: center;
+            width: 1000px;
+            text-align: left;
+            background-color: #1c1e1f;
+            color: #dddddd;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #766d61;
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .spell-card:hover {
+            background-color: #3a085e;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .spell-card.expanded {
+            background-color: #3a085e;
+        }
+
+        .spell-list-header {
+            display: grid;
+            grid-template-columns: 50px 100px 2fr 1fr 1fr 1fr 65px;
+            align-items: center;
+            width: 1000px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .list-header {
+            cursor: pointer;
+        }
+
+        .list-header span {
+            font-size: 14px;
+            margin-left: 5px;
+            display: inline-block;
+        }
+
+        .spell-list-header div {
+            padding: 10px;
+        }
+
+        .spell-level {
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 5px;
+            text-align: left;
+            min-width: 60px;
+            border: none;
+        }
+
+        .spell-icon {
+            width: 35px;
+            height: 35px;
+            background-color: #373b3d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: none;
+            box-shadow: none;
+        }
+
+        .icon-placeholder {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .spell-name-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            flex-grow: 1;
+            padding-left: 10px;
+        }
+
+        .spell-name {
+            vertical-align: top;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .spell-name .tag {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #b860f7;
+            margin-left: 0px;
+        }
+
+        .spell-components {
+            font-size: 0.8em;
+            color: #a6a6a6;
+        }
+
+        .spell-school {
+            font-size: 1em;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .spell-casting,
+        .spell-duration {
+            font-size: 1em;
+            min-width: 120px;
+            text-align: left;
+        }
+
+        .spell-save-damage {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            min-width: 80px;
+        }
+
+        .spell-expand {
+            font-size: 1.5em;
+            cursor: default;
+            color: #b860f7;
+            font-weight: bold;
+        }
+
+        .spell-description {
+            display: none;
+            grid-column: 1 / -1;
+            text-align: left;
+            padding: 10px;
+            background-color: #1c1e1f;
+            color: #dddddd;
+            border-top: 1px solid #766d61;
+            margin-top: 10px;
+        }
+
+        .spell-description.hidden {
+            display: none;
+        }
+
+        .spell-description:not(.hidden) {
+            display: block;
+        }
+
+        .spell-details {
+            display: grid;
+            padding: 5px;
+        }
+
+        .spell-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+
+        .spell-section {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: top;
+            justify-content: left;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+        }
+
+        .spell-divider {
+            border: none;
+            border-top: 1px solid #b860f7;
+            margin-top: 0px;
+            padding-top: 0px;
+        }
+
+        .spell-text {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-left: 10px;
+        }
+
+        .spell-materials {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-left: 10px;
+            color: #a6a6a6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px 20px;
+            width: 100%;
+            max-width: 900px;
+            justify-content: left;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .filters label {
+            font-weight: bold;
+            margin-bottom: 3px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .filters select {
+            width: 100%;
+            padding: 6px;
+            border-radius: 5px;
+            border: 1px solid #766d61;
+            background-color: #0f0f0f;
+            color: #dddddd;
+            text-align: left;
+        }
+
+        .search-filter-container {
+            display: flex;
+            justify-content: space-between;
+            /* Pushes search bar left and button right */
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            /* Matches the width of filters */
+            margin-bottom: 10px;
+        }
+
+        #search-bar {
+            padding: 8px;
+            width: 640px;
+            border: 1px solid #766d61;
+            border-radius: 5px;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            margin-bottom: 0px;
+            background-color: #0f0f0f;
+            color: #dddddd;
+        }
+
+        #reset-filters {
+            padding: 8px 12px;
+            background-color: #3a085e;
+            color: #dddddd;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease-in-out;
+            margin-left: 15px;
+        }
+
+        #reset-filters:hover {
+            background-color: #b860f7;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /* Ensures borders do not have double lines */
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 2px solid #dddddd;
+            /* White border for a dark theme */
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3a085e;
+            /* Header background color */
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Illadrya Spells</h1>
+
+        <div class="search-filter-container">
+            <input type="text" id="search-bar" placeholder="Spell Name">
+            <button id="reset-filters">Reset Filters</button>
+        </div>
+
+        <div class="filters">
+            <div class="filter-item">
+                <label for="class-filter">Class</label>
+                <select id="class-filter">
+                    <option value="All">All</option>
+                    {% for class in classes %}
+                    <option value="{{ class }}">{{ class }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="level-filter">Spell Level</label>
+                <select id="level-filter">
+                    <option value="All">All</option>
+                    {% for level in levels %}
+                    <option value="{{ level }}">
+                        {% if level == 0 %} Cantrip
+                        {% elif level == 1 %} 1st
+                        {% elif level == 2 %} 2nd
+                        {% elif level == 3 %} 3rd
+                        {% elif level == 4 %} 4th
+                        {% elif level == 5 %} 5th
+                        {% elif level == 6 %} 6th
+                        {% elif level == 7 %} 7th
+                        {% elif level == 8 %} 8th
+                        {% elif level == 9 %} 9th
+                        {% else %} {{ level }}
+                        {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="school-filter">Spell School</label>
+                <select id="school-filter">
+                    <option value="All">All</option>
+                    {% for school in schools %}
+                    <option value="{{ school }}">{{ school }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="casting-time-filter">Casting Time</label>
+                <select id="casting-time-filter">
+                    <option value="All">All</option>
+                    {% for casting_time in casting_times %}
+                    <option value="{{ casting_time }}">{{ casting_time }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="ritual-filter">Ritual</label>
+                <select id="ritual-filter">
+                    <option value="All">All</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="concentration-filter">Concentration</label>
+                <select id="concentration-filter">
+                    <option value="All">All</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div id="spell-list">
+            {% include 'spells/spell_table.html' %}
+        </div>
+    </div>
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentSortBy = "spell_level";
+        let currentSortDirection = "asc";
+
+        function updateSortingArrows() {
+            document.querySelectorAll(".list-header span").forEach(span => {
+                span.innerHTML = "";
+            });
+
+            let arrow = currentSortDirection === "asc" ? " ▲" : " ▼";
+            let arrowElement = document.querySelector(`#arrow-${currentSortBy}`);
+            if (arrowElement) {
+                arrowElement.innerHTML = arrow;
+            }
+        }
+
+        function handleSortClick(column) {
+            if (column === currentSortBy) {
+                currentSortDirection = currentSortDirection === "asc" ? "desc" : "asc";
+            } else {
+                currentSortBy = column;
+                currentSortDirection = "asc";
+            }
+
+            updateSpellsFromServer();
+        }
+
+        function updateSpellsFromServer() {
+            let queryString = "?";
+            document.querySelectorAll(".filters select").forEach(filter => {
+                let filterValue = filter.value;
+                if (filterValue && filterValue !== "All") {
+                    let paramName = filter.id.replace("-filter", "");
+                    queryString += `${paramName}=${encodeURIComponent(filterValue)}&`;
+                }
+            });
+
+            let searchValue = document.getElementById("search-bar").value.trim();
+            if (searchValue) {
+                queryString += `search=${encodeURIComponent(searchValue)}&`;
+            }
+
+            queryString += `sort_by=${currentSortBy}&sort_direction=${currentSortDirection}`;
+
+            fetch(queryString, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+                .then(response => response.text())
+                .then(data => {
+                    let spellListDiv = document.getElementById("spell-list");
+                    if (!spellListDiv) {
+                        console.error("Error: #spell-list element not found.");
+                        return;
+                    }
+
+                    spellListDiv.innerHTML = data;
+                    attachSortingEventListeners();
+                    updateSortingArrows();
+                })
+                .catch(error => console.error("Error fetching spells:", error));
+        }
+
+        function attachSortingEventListeners() {
+            document.querySelectorAll(".sortable").forEach(header => {
+                header.removeEventListener("click", () => handleSortClick(header.dataset.sort));
+                header.addEventListener("click", () => handleSortClick(header.dataset.sort));
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById("search-bar").value = "";
+            document.querySelectorAll(".filters select").forEach(filter => {
+                filter.value = "All";
+            });
+
+            updateSpellsFromServer();
+        }
+
+        window.toggleDescription = function (element) {
+            let spellCard = element.closest(".spell-card");
+            let description = spellCard.querySelector(".spell-description");
+            let expandIcon = spellCard.querySelector(".expand-icon");
+
+            if (description.style.display === "none" || description.style.display === "") {
+                description.style.display = "block";
+                spellCard.classList.add("expanded");
+                spellCard.style.paddingBottom = "15px";
+                expandIcon.innerText = "−";
+            } else {
+                description.style.display = "none";
+                spellCard.classList.remove("expanded");
+                spellCard.style.paddingBottom = "15px";
+                expandIcon.innerText = "+";
+            }
+        };
+
+        document.getElementById("reset-filters").addEventListener("click", resetFilters);
+
+        document.querySelectorAll(".filters select").forEach(filter => {
+            filter.addEventListener("change", updateSpellsFromServer);
+        });
+
+        document.getElementById("search-bar").addEventListener("keyup", updateSpellsFromServer);
+
+        attachSortingEventListeners();
+        updateSpellsFromServer();
+    });
+</script>
+
+</html>

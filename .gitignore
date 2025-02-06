@@ -1,0 +1,38 @@
+# Ignore Python cache
+__pycache__
+.pyc
+.pyo
+.pyd
+
+# Ignore Django secrets
+.env
+.sqlite3
+db.sqlite3
+secrets.json
+config.json
+
+# Ignore Django migration history
+migrations.py
+migrations.pyc
+
+# Ignore IDE files
+.vscode
+.idea
+.sublime-workspace
+
+# Ignore Railway and API keys
+.env
+.key
+.pem
+
+# Ignore compiled assets
+staticfiles
+node_modules
+
+# Ignore local environment files
+.env.local
+settings_local.py
+
+illadrya-spells-22aa3e1cd51e.json
+
+debug.log

@@ -1,0 +1,157 @@
+<div class="spell-list">
+    <!-- Titles Row -->
+    <div class="spell-list-header">
+        <div class="spell-icon-header"></div>
+        <div class="list-header sortable" data-sort="spell_level" onclick="handleSortClick('spell_level')">
+            Level<span id="arrow-spell_level"></span>
+        </div>
+        <div class="list-header sortable" data-sort="spell_name" onclick="handleSortClick('spell_name')">
+            Name<span id="arrow-spell_name"></span>
+        </div>
+        <div class="list-header sortable" data-sort="spell_school" onclick="handleSortClick('spell_school')">
+            School<span id="arrow-spell_school"></span>
+        </div>
+        <div class="list-header sortable" data-sort="spell_casting_time"
+            onclick="handleSortClick('spell_casting_time')">
+            Casting Time<span id="arrow-spell_casting_time"></span>
+        </div>
+        <div class="list-header sortable" data-sort="spell_duration" onclick="handleSortClick('spell_duration')">
+            Duration<span id="arrow-spell_duration"></span>
+        </div>
+        <div class="spell-expand-header"></div>
+    </div>
+
+
+    {% for spell in spells %}
+    <div class="spell-card" onclick="toggleDescription(this)">
+        <!-- Icon -->
+        <div class="spell-icon">
+            <span class="icon-placeholder">{{ spell.spell_school|slice:":1" }}</span>
+        </div>
+
+        <!-- Spell Level -->
+        <div class="spell-level">
+            <span>
+                {% if spell.spell_level == 0 %} Cantrip
+                {% elif spell.spell_level == 1 %} 1st
+                {% elif spell.spell_level == 2 %} 2nd
+                {% elif spell.spell_level == 3 %} 3rd
+                {% elif spell.spell_level == 4 %} 4th
+                {% elif spell.spell_level == 5 %} 5th
+                {% elif spell.spell_level == 6 %} 6th
+                {% elif spell.spell_level == 7 %} 7th
+                {% elif spell.spell_level == 8 %} 8th
+                {% elif spell.spell_level == 9 %} 9th
+                {% else %} {{ spell.spell_level }}
+                {% endif %}
+            </span>
+        </div>
+
+        <!-- Name & Components -->
+        <div class="spell-name-container">
+            <span class="spell-name">
+                {{ spell.spell_name }}
+                {% if spell.spell_concentration %} <span class="tag">(C)</span>{% endif %}
+                {% if spell.spell_ritual %} <span class="tag">(R)</span>{% endif %}
+            </span>
+            <span class="spell-components">{{ spell.spell_components }}</span>
+        </div>
+
+        <!-- Spell School -->
+        <div class="spell-school">
+            <span>{{ spell.spell_school }}</span>
+        </div>
+
+        <!-- Casting Time -->
+        <div class="spell-casting">
+            <span>{{ spell.spell_casting_time }}</span>
+        </div>
+
+        <!-- Duration -->
+        <div class="spell-duration">
+            <span>{{ spell.spell_duration }}</span>
+        </div>
+
+        <!-- Expand -->
+        <div class="spell-expand">+</div>
+
+        <!-- Description -->
+        <div class=" spell-description hidden">
+            <div class="spell-details">
+                <div class="spell-row">
+                    <div class="spell-section">
+                        <strong>Level</strong>
+                        <span>
+                            {% if spell.spell_level == 0 %} Cantrip
+                            {% elif spell.spell_level == 1 %} 1st
+                            {% elif spell.spell_level == 2 %} 2nd
+                            {% elif spell.spell_level == 3 %} 3rd
+                            {% elif spell.spell_level == 4 %} 4th
+                            {% elif spell.spell_level == 5 %} 5th
+                            {% elif spell.spell_level == 6 %} 6th
+                            {% elif spell.spell_level == 7 %} 7th
+                            {% elif spell.spell_level == 8 %} 8th
+                            {% elif spell.spell_level == 9 %} 9th
+                            {% else %} {{ spell.spell_level }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="spell-section">
+                        <strong>Casting Time</strong>
+                        <span>{{ spell.spell_casting_time }}
+                        {% if spell.spell_ritual %} <span class="tag">(R)</span>{% endif %}
+                        </span>
+                    </div>
+                    <div class="spell-section">
+                        <strong>Range</strong>
+                        <span>{{ spell.spell_range }}</span>
+                    </div>
+                    <div class="spell-section">
+                        <strong>Components</strong>
+                        <span>
+                            {{ spell.spell_components }}
+                            {% if spell.spell_materials %}
+                            *
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="spell-row">
+                    <div class="spell-section">
+                        <strong>Duration</strong>
+                        <span>{{ spell.spell_duration }}
+                        {% if spell.spell_concentration %} <span class="tag">(C)</span>{% endif %}
+                        </span>
+                    </div>
+                    <div class="spell-section">
+                        <strong>School</strong>
+                        <span>{{ spell.spell_school }}</span>
+                    </div>
+                    <div class="spell-section">
+                        <strong>Classes</strong>
+                        <span>
+                            {% for class in spell.classes.all %}
+                            {{ class.class_name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                            None
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="spell-divider"> <!-- Separator Line -->
+
+            <div class="spell-text">
+                {{ spell.formatted_description|safe }}
+            </div>
+
+            <div class="spell-materials">
+                {% if spell.spell_materials %}
+                <br><i>* - ({{ spell.spell_materials }})</i>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
