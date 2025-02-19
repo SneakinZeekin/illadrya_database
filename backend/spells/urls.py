@@ -1,12 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import SpellViewSet
+from .views import SpellViewSet, ClassViewSet
 from django.urls import include, path
 
 router = DefaultRouter()
-router.register(r'', SpellViewSet)
+router.register(r'spells', SpellViewSet, basename="spells")
+router.register(r'classes', ClassViewSet, basename="classes")
 
 urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]
