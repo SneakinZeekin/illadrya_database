@@ -26,10 +26,6 @@ function SpellList() {
       .then((response) => {
         setSpells(response.data);
         setFilteredSpells(response.data);
-
-        if (response.data.length > 0) {
-          console.log("Example spell data:", response.data[0]);
-        }
       })
       .catch((error) => console.error("Error fetching spells:", error));
   }, []);
@@ -38,7 +34,7 @@ function SpellList() {
     axios.get("http://127.0.0.1:8000/api/classes/")
       .then((response) => {
         if (Array.isArray(response.data)) {
-          setAvailableClasses(response.data.sort((a, b) => a.class_name.localeCompare(b.class_name))); // Sort alphabetically
+          setAvailableClasses(response.data.sort((a, b) => a.class_name.localeCompare(b.class_name)));
         } else {
           console.error("Unexpected API response format for classes:", response.data);
           setAvailableClasses([]);
