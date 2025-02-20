@@ -1,3 +1,95 @@
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 26px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #3a085e;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.theme-label {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+/*  Dark Theme */
+body[data-theme="dark"] {
+    --text-color: #dddddd;
+    --background-color: #1c1e1f;
+    --card-background: #242424;
+    --expanded-background: #161718;
+    --filter-color: #0f0f0f;
+    --header-background: #3a085e;
+    --splash-color: #b860f7;
+    --border-color: #766d61;
+    --components-color: #a6a6a6;
+    --icon-color: #373b3d;
+}
+
+/* Light Theme */
+body[data-theme="light"] {
+    --text-color: #1c1e1f; 
+    --background-color: #e7e5e7; 
+    --card-background: #e7e7e7; 
+    --expanded-background: #f8f7f4;
+    --filter-color: #e9e8f0; 
+    --header-background: #704cd9; 
+    --splash-color: #a675e6; 
+    --border-color: #b8a6c9; 
+    --components-color: #5c4a72;
+    --icon-color: #6b6e72;
+}
+
+body {
+    background-color: var(--background-color); 
+    color: var(--text-color); /* Sets text color */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .spell-list {
     display: flex;
     flex-direction: column;
@@ -10,24 +102,39 @@
 }
 
 .spell-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.spell-header{
     display: grid;
     grid-template-columns: 50px 100px 2fr 1fr 1fr 1fr 50px;
     align-items: center;
     width: 100%;
-    background-color: #1c1e1f;
+    box-sizing: border-box;
+    background-color: var(--card-background);
+    border: 1px solid var(--background-color);
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid #766d61;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.spell-header:hover{
+    background-color: var(--header-background);
+    border: 1px solid var(--header-background);
+}
+
 .spell-card:hover {
-    background-color: #3a085e;
+    background-color: var(--header-background);
 }
 
 .spell-card.expanded {
-    background-color: #1c1e1f;
+    background-color: var(--background-color)
 }
 
 .spell-list-header {
@@ -36,7 +143,7 @@
     align-items: center;
     width: 100%;
     font-weight: bold;
-    border-bottom: 2px solid #b860f7;
+    border-bottom: 2px solid var(--splash-color);
     padding: 10px 0;
 }
 
@@ -54,38 +161,92 @@
     font-weight: bold;
 }
 
-.spell-name .tag {
+.spell-components {
+    font-size: 0.8em;
+    color: var(--components-color);
+}
+
+.spell-section {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: top;
+    justify-content: left;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    
+}
+
+.spell-description {
+    display: none;
+    grid-column: 1 / -1;
+    text-align: left;
+    padding: 10px;
+    background-color: var(--expanded-background);
+    color: var(--text-color);
+    border-top: 1px solid var(--border-color);
+}
+
+.spell-description .tag, .spell-name .tag {
     font-size: 0.8em;  
     font-weight: bold;
-    color: white;  
-    background-color: #b860f7; 
+    color: var(--text-color);
+    background-color: var(--splash-color); 
     margin-left: 5px;
     padding: 2px 4px; 
     border-radius: 4px;
     text-transform: uppercase; 
 }
 
-.spell-components {
-    font-size: 0.8em;
-    color: #a6a6a6;
-}
-
-.spell-description {
+.spell-description.hidden {
     display: none;
-    grid-column: 1 / -1;
-    padding: 10px;
-    background-color: #292b2c;
-    color: #ddd;
 }
 
-.spell-card.expanded .spell-description {
+.spell-description:not(.hidden) {
     display: block;
+}
+
+.spell-details {
+    display: grid;
+    padding: 5px;
+}
+
+.spell-materials, .spell-reaction {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-left: 10px;
+    color: var(--components-color);
+}
+
+.spell-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+    padding: 5px;
+}
+
+.spell-section {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: top;
+    justify-content: left;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
+.spell-divider {
+    border: none;
+    border-top: 1px solid var(--splash-color); 
+    margin-top: 0px;
+    padding-top: 0px;
 }
 
 .spell-icon {
     width: 35px;
     height: 35px;
-    background-color: #373b3d;
+    background-color: var(--icon-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -117,15 +278,15 @@
     flex-grow: 1;
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #766d61;
-    background-color: #0f0f0f;
-    color: #dddddd;
+    border: 1px solid var(--border-color);
+    background-color: var(--filter-color);
+    color: var(--text-color);
 }
 
 /* Reset Button */
 .reset-filters {
     padding: 10px 15px;
-    background-color: #3a085e;
+    background-color: var(--header-background);
     color: white;
     border: none;
     border-radius: 5px;
@@ -133,7 +294,7 @@
 }
 
 .reset-filters:hover {
-    background-color: #b860f7;
+    background-color: var(--splash-color); 
 }
 
 /* Filters Container */
@@ -161,15 +322,15 @@
 
 .filter-item label {
     font-size: 0.9em;
-    color: #dddddd;
+    color: var(--text-color);
     margin-bottom: 3px;
 }
 
 .filter-item select {
     padding: 8px;
     border-radius: 5px;
-    border: 1px solid #766d61;
-    background-color: #0f0f0f;
-    color: #dddddd;
+    border: 1px solid var(--border-color);
+    background-color: var(--filter-color);
+    color: var(--text-color);
     cursor: pointer;
 }

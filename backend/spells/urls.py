@@ -1,7 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import SpellViewSet, ClassViewSet
-from django.urls import include, path
 
 router = DefaultRouter()
 router.register(r'spells', SpellViewSet, basename="spells")

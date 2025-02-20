@@ -16,7 +16,7 @@ class Spell(models.Model):
     spell_level = models.IntegerField()
     spell_school = models.CharField(max_length=100)
     spell_casting_time = models.CharField(max_length=100)
-    spell_reaction = models.BooleanField(default=False)
+    spell_reaction = models.TextField(blank=True, null=True)
     spell_ritual = models.BooleanField(default=False)
     spell_range = models.CharField(max_length=100, null=True, blank=True)
     spell_components = models.CharField(max_length=255, blank=True, null=True)
@@ -31,13 +31,6 @@ class Spell(models.Model):
     class Meta:
         db_table = "spells"
         managed = False
-
-    def formatted_description(self):
-        formatted_text = self.spell_description.replace(r'\n', '<br><br>')
-        formatted_text = formatted_text.replace('- ', '• ')
-        formatted_text = re.sub(r'\*(.*?)\*', r'<strong>\1</strong>', formatted_text)
-        formatted_text = re.sub(r"(At Higher Levels\.)", r"<b><i>\1</i></b>", formatted_text)
-        return formatted_text 
 
     def __str__(self):
         return self.spell_name

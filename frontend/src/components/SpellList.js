@@ -9,6 +9,8 @@ function SpellList() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("spell_level");
   const [sortDirection, setSortDirection] = useState("asc");
+  const storedTheme = localStorage.getItem("theme") || "dark";
+  const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -24,8 +26,16 @@ function SpellList() {
     // Fetch spell data
     axios.get("http://127.0.0.1:8000/api/spells/")
       .then((response) => {
-        setSpells(response.data);
-        setFilteredSpells(response.data);
+        const sortedSpells = response.data.sort((a, b) => {
+          // Sort by spell level first
+          if (a.spell_level !== b.spell_level) {
+            return a.spell_level - b.spell_level;
+          }
+          // If spell levels are the same, sort alphabetically
+          return a.spell_name.localeCompare(b.spell_name);
+        });
+        setSpells(sortedSpells);
+        setFilteredSpells(sortedSpells);
       })
       .catch((error) => console.error("Error fetching spells:", error));
   }, []);
@@ -46,24 +56,33 @@ function SpellList() {
   // Filter and search logic
   useEffect(() => {
     const filtered = spells.filter(spell => {
-        return (
-            (search === "" || spell.spell_name.toLowerCase().includes(search.toLowerCase())) &&
-            (filters.class === "All" || (
-                Array.isArray(spell.classes) && 
-                spell.classes.some(cls => cls === filters.class)
-            )) &&
-            (filters.level === "All" || spell.spell_level.toString() === filters.level) &&
-            (filters.school === "All" || spell.spell_school === filters.school) &&
-            (filters.castingTime === "All" || spell.spell_casting_time === filters.castingTime) &&
-            (filters.ritual === "All" || (filters.ritual === "Yes" ? spell.spell_ritual : !spell.spell_ritual)) &&
-            (filters.concentration === "All" || (filters.concentration === "Yes" ? spell.spell_concentration : !spell.spell_concentration))
-        );
+      return (
+        (search === "" || spell.spell_name.toLowerCase().includes(search.toLowerCase())) &&
+        (filters.class === "All" || (
+          Array.isArray(spell.classes) &&
+          spell.classes.some(cls => cls === filters.class)
+        )) &&
+        (filters.level === "All" || spell.spell_level.toString() === filters.level) &&
+        (filters.school === "All" || spell.spell_school === filters.school) &&
+        (filters.castingTime === "All" || spell.spell_casting_time === filters.castingTime) &&
+        (filters.ritual === "All" || (filters.ritual === "Yes" ? spell.spell_ritual : !spell.spell_ritual)) &&
+        (filters.concentration === "All" || (filters.concentration === "Yes" ? spell.spell_concentration : !spell.spell_concentration))
+      );
     });
 
     setFilteredSpells(filtered);
-}, [search, spells, filters]);
+  }, [search, spells, filters]);
 
+  useEffect(() => {
+    document.body.setAttribute("data-theme", darkMode ? "dark" : "light");
+    }, [darkMode]);
 
+  const toggleTheme = () => {
+    const newTheme = darkMode ? "light" : "dark";
+    setDarkMode(!darkMode);
+    localStorage.setItem("theme", newTheme);
+    document.body.setAttribute("data-theme", newTheme);
+  }
 
   // Toggle spell description visibility
   const toggleDescription = (index) => {
@@ -130,9 +149,17 @@ function SpellList() {
     return `${num}th`;
   };
 
-
   return (
     <div className="container">
+      {/* Theme Toggle Switch */}
+      <div className="theme-toggle">
+        <label className="switch">
+          <input type="checkbox" checked={darkMode} onChange={toggleTheme} />
+          <span className="slider round"></span>
+        </label>
+        <span className="theme-label">{darkMode ? "Dark Mode" : "Light Mode"}</span>
+      </div>
+
       <h1>Illadrya Spells</h1>
 
       {/* Search Bar & Filters */}
@@ -165,7 +192,6 @@ function SpellList() {
                 )}
               </select>
             </div>
-
 
             <div className="filter-item">
               <label>Spell Level</label>
@@ -252,38 +278,103 @@ function SpellList() {
         </div>
 
         {filteredSpells.map((spell, index) => (
-          <div key={spell.spell_name} className={`spell-card ${spell.expanded ? "expanded" : ""}`} onClick={() => toggleDescription(index)}>
-            <div className="spell-icon">
-              <span className="icon-placeholder">{spell.spell_school.charAt(0)}</span>
-            </div>
-            <div className="spell-level">{getOrdinal(spell.spell_level)}</div>
-            <div className="spell-name-container">
-              <span className="spell-name">
-                {spell.spell_name}
-                {spell.spell_concentration && <span className="tag">C</span>}
-                {spell.spell_ritual && <span className="tag">R</span>}
-              </span>
-              <span className="spell-components">{spell.spell_components || "None"}</span>
-            </div>
-            <div className="spell-school">{spell.spell_school}</div>
-            <div className="spell-casting">{spell.spell_casting_time}</div>
-            <div className="spell-duration">{spell.spell_duration}</div>
-            <div className="spell-expand">{spell.expanded ? "−" : "+"}</div>
-
-            {spell.expanded && (
-              <div className="spell-description">
-                <div dangerouslySetInnerHTML={{ __html: spell.spell_description || "No description available." }}></div>
-                {spell.spell_materials && (
-                  <div className="spell-materials">
-                    <i>* - ({spell.spell_materials})</i>
-                  </div>
-                )}
+          <div key={spell.spell_name} className={`spell-card ${spell.expanded ? "expanded" : ""}`}>
+            <div className="spell-header" onClick={() => toggleDescription(index)}>
+              <div className="spell-icon">
+                <span className="icon-placeholder">{spell.spell_school.charAt(0)}</span>
               </div>
-            )}
+              <div className="spell-level">{getOrdinal(spell.spell_level)}</div>
+              <div className="spell-name-container">
+                <span className="spell-name">
+                  {spell.spell_name}
+                  {spell.spell_concentration && <span className="tag">C</span>}
+                  {spell.spell_ritual && <span className="tag">R</span>}
+                </span>
+                <span className="spell-components">{spell.spell_components || "None"}</span>
+              </div>
+              <div className="spell-school">{spell.spell_school}</div>
+              <div className="spell-casting">{spell.spell_casting_time}</div>
+              <div className="spell-duration">{spell.spell_duration}</div>
+              <div className="spell-expand">{spell.expanded ? "−" : "+"}</div>
+            </div>
+
+            {
+              spell.expanded && (
+                <div className="spell-description">
+                  <div className="spell-details">
+                    <div className="spell-row">
+                      <div className="spell-section">
+                        <strong>Level</strong>
+                        <span>{getOrdinal(spell.spell_level)}</span>
+                      </div>
+                      <div className="spell-section">
+                        <strong>Casting Time</strong>
+                        <span>
+                          {spell.spell_casting_time}
+                          {spell.spell_reaction && " *"}
+                          {spell.spell_ritual && <span className="tag">R</span>}
+                        </span>
+                      </div>
+                      <div className="spell-section">
+                        <strong>Range</strong>
+                        <span>{spell.spell_range}</span>
+                      </div>
+                      <div className="spell-section">
+                        <strong>Components</strong>
+                        <span>
+                          {spell.spell_components}
+                          {spell.spell_materials && " *"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="spell-row">
+                      <div className="spell-section">
+                        <strong>Duration</strong>
+                        <span>
+                          {spell.spell_duration}
+                          {spell.spell_concentration && <span className="tag">C</span>}
+                        </span>
+                      </div>
+                      <div className="spell-section">
+                        <strong>School</strong>
+                        <span>{spell.spell_school}</span>
+                      </div>
+                      <div className="spell-section">
+                        <strong>Classes</strong>
+                        <span>
+                          {spell.classes && spell.classes.length > 0
+                            ? spell.classes.join(", ")
+                            : "None"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr className="spell-divider" />
+
+                  <div className="spell-text" dangerouslySetInnerHTML={{ __html: spell.formatted_description || "Loading description..." }}></div>
+
+                  {spell.spell_materials && (
+                    <div className="spell-materials">
+                      <br />
+                      <i>* - ({spell.spell_materials})</i>
+                    </div>
+                  )}
+
+                  {spell.spell_reaction && (
+                    <div className="spell-reaction">
+                      <br />
+                      <i>* - ({spell.spell_reaction})</i>
+                    </div>
+                  )}
+                </div>
+              )
+            }
           </div>
         ))}
       </div>
-    </div>
+    </div >
   );
 }
 
