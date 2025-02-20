@@ -8,6 +8,29 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+SKILLS = {
+    "Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception",
+    "History", "Insight", "Intimidation", "Investigation", "Medicine",
+    "Nature", "Perception", "Performance", "Persuasion", "Religion",
+    "Sleight of Hand", "Stealth", "Survival"
+}
+
+TOOLS = {
+    "Alchemist's Supplies", "Brewer's Supplies", "Calligrapher's Supplies",
+    "Carpenter's Tools", "Cartographer's Tools", "Cobbler's Tools", 
+    "Cook's Utensils", "Glassblower's Tools", "Jeweler's Tools", 
+    "Leatherworker's Tools", "Mason's Tools", "Painter's Supplies",
+    "Potter's Tools", "Smith's Tools", "Tinker's Tools", "Weaver's Tools",
+    "Woodcarver's Tools", "at least one Gaming Set", "at least one Musical Instrument",
+    "Thieves' Tools", "Poisoner's Kit"
+}
+
+CLASSES = {
+    "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Magus", "Monk",
+    "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard",
+}
+
+
 # Database configuration
 db_config = {
     "host": os.getenv('DB_HOST'),
@@ -36,8 +59,7 @@ SPELL_FIELD_MAPPING = {
 }
 
 FEAT_FIELD_MAPPING = {
-    'Feat Name': 'feat_name', 'Skill Prereqs': 'skill_prereqs', 'Spell Prereqs': 'spell_prereqs',
-    'Class Prereqs': 'class_prereqs', 'Description': 'feat_description',
+    'Feat Name': 'feat_name', 'Prereqs': 'feat_prereqs', 'Description': 'feat_description',
 }
 
 # Hash function for spell validation
@@ -125,12 +147,19 @@ def create_tables(cursor):
     # Create feats table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS adventuring_feats (
-            feat_name VARCHAR(255) UNIQUE PRIMARY KEY NOT NULL,
-            skill_prereqs TEXT,
-            spell_prereqs INTEGER,
-            class_prereqs TEXT,
+            id SERIAL PRIMARY KEY,
+            feat_name VARCHAR(255) UNIQUE NOT NULL,
             feat_description TEXT NOT NULL,
             feat_hash CHAR(64) NOT NULL
+        );
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS adventuring_feat_prereqs (
+            id SERIAL PRIMARY KEY,
+            feat_id INT NOT NULL REFERENCES adventuring_feats(id) ON DELETE CASCADE,
+            category VARCHAR(50) NOT NULL,
+            value VARCHAR(255) NOT NULL
         );
     """)
 
@@ -177,40 +206,65 @@ def update_spells(cursor, spells):
 
 def update_feats(cursor, feats):
     feat_values = []
+    feat_prereq_values = []
     for feat in feats:
         feat_hash = calculate_feat_hash(feat)
 
-        skill_prereqs = feat["skill_prereqs"].strip() if feat["skill_prereqs"].strip() else None
-        class_prereqs = feat["class_prereqs"].strip() if feat["class_prereqs"].strip() else None
-
-        if isinstance(feat["spell_prereqs"], int):
-            spell_prereqs = feat["spell_prereqs"]
-        else:
-            spell_prereqs = None
-
         feat_values.append((
             feat["feat_name"],
-            skill_prereqs,
-            spell_prereqs,
-            class_prereqs,
             feat["feat_description"],
             feat_hash
         ))
 
     feat_insert_query = """
         INSERT INTO adventuring_feats (
-            feat_name, skill_prereqs, spell_prereqs, 
-            class_prereqs, feat_description, feat_hash
+            feat_name, feat_description, feat_hash
         ) VALUES %s
         ON CONFLICT (feat_name) DO UPDATE SET
-            skill_prereqs = EXCLUDED.skill_prereqs,
-            spell_prereqs = EXCLUDED.spell_prereqs,
-            class_prereqs = EXCLUDED.class_prereqs,
             feat_description = EXCLUDED.feat_description,
             feat_hash = EXCLUDED.feat_hash;
     """
 
     psycopg2.extras.execute_values(cursor, feat_insert_query, feat_values)
+
+    # Fetch feats for prereq processing
+    cursor.execute("SELECT id, feat_name FROM adventuring_feats WHERE feat_name IN %s;", 
+               (tuple(feat["feat_name"] for feat in feats),))
+    inserted_feats = cursor.fetchall()
+
+    cursor.execute("DELETE FROM adventuring_feat_prereqs;")
+
+    for feat_id, feat_name in inserted_feats:
+        feat_data = next((f for f in feats if f["feat_name"] == feat_name), None)
+        if feat_data and "feat_prereqs" in feat_data and feat_data["feat_prereqs"]:
+            prereqs = [p.strip() for p in feat_data["feat_prereqs"].split(", ")]
+
+            for prereq in prereqs:
+                if prereq in SKILLS:
+                    category = "Skill Proficiency"
+                    value = f"Proficiency in {prereq}"
+                elif prereq in TOOLS:
+                    category = "Tool Proficinecy"
+                    value = f"Proficiency with {prereq}"
+                elif prereq in CLASSES:
+                    category = "Class"
+                    value = prereq
+                elif "Ability to cast" in prereq:
+                    category = "Spellcasting"
+                    value = prereq
+                else:
+                    category = "Other"
+                    value = prereq
+
+                feat_prereq_values.append((feat_id, category, value))
+    
+    if feat_prereq_values:
+        feat_prereq_insert_query = """
+            INSERT INTO adventuring_feat_prereqs (feat_id, category, value)
+            VALUES %s;
+        """
+        psycopg2.extras.execute_values(cursor, feat_prereq_insert_query, feat_prereq_values)
+
 
     print("Feats updated successfully.")
 
