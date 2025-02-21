@@ -21,8 +21,8 @@ TOOLS = {
     "Cook's Utensils", "Glassblower's Tools", "Jeweler's Tools", 
     "Leatherworker's Tools", "Mason's Tools", "Painter's Supplies",
     "Potter's Tools", "Smith's Tools", "Tinker's Tools", "Weaver's Tools",
-    "Woodcarver's Tools", "at least one Gaming Set", "at least one Musical Instrument",
-    "Thieves' Tools", "Poisoner's Kit"
+    "Woodcarver's Tools", "Gaming Set", "Musical Instrument", "Thieves' Tools", 
+    "Poisoner's Kit"
 }
 
 CLASSES = {
@@ -242,14 +242,14 @@ def update_feats(cursor, feats):
             for prereq in prereqs:
                 if prereq in SKILLS:
                     category = "Skill Proficiency"
-                    value = f"Proficiency in {prereq}"
+                    value = prereq
                 elif prereq in TOOLS:
-                    category = "Tool Proficinecy"
-                    value = f"Proficiency with {prereq}"
+                    category = "Tool Proficiency"
+                    value = prereq
                 elif prereq in CLASSES:
                     category = "Class"
                     value = prereq
-                elif "Ability to cast" in prereq:
+                elif "Spells" in prereq:
                     category = "Spellcasting"
                     value = prereq
                 else:

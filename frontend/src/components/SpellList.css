@@ -1,94 +1,23 @@
-.theme-toggle {
+.spell-nav-links {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
     margin-bottom: 20px;
-    padding: 10px;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 26px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-}
-
-input:checked + .slider {
-    background-color: #3a085e;
-}
-
-input:checked + .slider:before {
-    transform: translateX(24px);
-}
-
-.theme-label {
-    font-size: 1em;
-    font-weight: bold;
-}
-
-/*  Dark Theme */
-body[data-theme="dark"] {
-    --text-color: #dddddd;
-    --background-color: #1c1e1f;
-    --card-background: #242424;
-    --expanded-background: #161718;
-    --filter-color: #0f0f0f;
-    --header-background: #3a085e;
-    --splash-color: #b860f7;
-    --border-color: #766d61;
-    --components-color: #a6a6a6;
-    --icon-color: #373b3d;
-}
-
-/* Light Theme */
-body[data-theme="light"] {
-    --text-color: #1c1e1f; 
-    --background-color: #e7e5e7; 
-    --card-background: #e7e7e7; 
-    --expanded-background: #f8f7f4;
-    --filter-color: #e9e8f0; 
-    --header-background: #704cd9; 
-    --splash-color: #a675e6; 
-    --border-color: #b8a6c9; 
-    --components-color: #5c4a72;
-    --icon-color: #6b6e72;
-}
-
-body {
-    background-color: var(--background-color); 
-    color: var(--text-color); /* Sets text color */
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
+  }
+  
+  .spell-nav-links .nav-link {
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+    background-color: var(--header-background);  /* ✅ Matches your theme */
+    border-radius: 8px;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .spell-nav-links .nav-link:hover {
+    background-color: var(--splash-color);
+  }
 
 .spell-list {
     display: flex;
@@ -108,17 +37,19 @@ body {
     width: 100%;
     border: 1px solid var(--border-color);
     border-radius: 8px;
+    text-align: left; 
 }
 
 .spell-header{
     display: grid;
-    grid-template-columns: 50px 100px 2fr 1fr 1fr 1fr 50px;
+    grid-template-columns: 0.4fr 0.5fr 2fr 1fr 1.1fr 1fr 0.2fr;
     align-items: center;
+    text-align: left; 
     width: 100%;
     box-sizing: border-box;
     background-color: var(--card-background);
     border: 1px solid var(--background-color);
-    padding: 15px;
+    padding: 10px;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -139,12 +70,14 @@ body {
 
 .spell-list-header {
     display: grid;
-    grid-template-columns: 50px 100px 2fr 1fr 1fr 1fr 50px;
+    grid-template-columns: 0.4fr 0.5fr 2fr 1fr 1.1fr 1fr 0.2fr;
     align-items: center;
+    text-align: left; 
     width: 100%;
     font-weight: bold;
+    box-sizing: border-box;
     border-bottom: 2px solid var(--splash-color);
-    padding: 10px 0;
+    padding: 10px;
 }
 
 .spell-name-container {
@@ -156,9 +89,9 @@ body {
 
 .spell-name {
     display: flex;
-    align-items: center;
-    font-size: 1em;
+    font-size: 1.2rem;
     font-weight: bold;
+    align-items: center;
 }
 
 .spell-components {
@@ -184,7 +117,8 @@ body {
     padding: 10px;
     background-color: var(--expanded-background);
     color: var(--text-color);
-    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 8px;
 }
 
 .spell-description .tag, .spell-name .tag {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import "./SpellList.css";
 
 function SpellList() {
@@ -24,7 +25,7 @@ function SpellList() {
 
   useEffect(() => {
     // Fetch spell data
-    axios.get("http://127.0.0.1:8000/api/spells/")
+    axios.get("http://127.0.0.1:8000/api/spells/spells/")
       .then((response) => {
         const sortedSpells = response.data.sort((a, b) => {
           // Sort by spell level first
@@ -41,7 +42,7 @@ function SpellList() {
   }, []);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/classes/")
+    axios.get("http://127.0.0.1:8000/api/spells/classes/")
       .then((response) => {
         if (Array.isArray(response.data)) {
           setAvailableClasses(response.data.sort((a, b) => a.class_name.localeCompare(b.class_name)));
@@ -158,6 +159,12 @@ function SpellList() {
           <span className="slider round"></span>
         </label>
         <span className="theme-label">{darkMode ? "Dark Mode" : "Light Mode"}</span>
+      </div>
+
+       {/* Navigation Links */}
+       <div className="nav-links">
+        <Link to="/" className="nav-link">Home</Link>
+        <Link to="/feats" className="nav-link">Adventuring Feats</Link>
       </div>
 
       <h1>Illadrya Spells</h1>

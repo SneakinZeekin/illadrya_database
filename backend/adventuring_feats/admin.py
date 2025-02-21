@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import AdventuringFeat, AdventuringFeatPrereq
 
-# Register your models here.
+admin.site.register(AdventuringFeat)
+admin.site.register(AdventuringFeatPrereq)
