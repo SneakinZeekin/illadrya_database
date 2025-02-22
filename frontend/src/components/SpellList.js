@@ -25,7 +25,7 @@ function SpellList() {
 
   useEffect(() => {
     // Fetch spell data
-    axios.get("http://127.0.0.1:8000/api/spells/spells/")
+    axios.get(`${process.env.REACT_APP_API_URL}/spells/spells/`)
       .then((response) => {
         const sortedSpells = response.data.sort((a, b) => {
           // Sort by spell level first
@@ -42,7 +42,7 @@ function SpellList() {
   }, []);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/spells/classes/")
+    axios.get(`${process.env.REACT_APP_API_URL}/spells/classes/`)
       .then((response) => {
         if (Array.isArray(response.data)) {
           setAvailableClasses(response.data.sort((a, b) => a.class_name.localeCompare(b.class_name)));
