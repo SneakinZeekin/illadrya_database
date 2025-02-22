@@ -31,7 +31,7 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "illadrya-database.com",
-    "www.illadrya-database.com"
+    "www.illadrya-database.com",
     "api.illadrya-database.com",
 ]
 
