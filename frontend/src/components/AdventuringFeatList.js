@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { ThemeContext } from "../ThemeContext";
 import "./AdventuringFeatList.css";
 
-const AdventuringFeatList = () => {
+function AdventuringFeatList() {
     const [feats, setFeats] = useState([]);
     const [filteredFeats, setFilteredFeats] = useState([]);
     const [search, setSearch] = useState("");
-    const storedTheme = localStorage.getItem("theme") || "dark";
-    const [darkMode, setDarkMode] = useState(storedTheme === "dark");
     const [sortBy, setSortBy] = useState("feat_name");
     const [sortDirection, setSortDirection] = useState("asc");
+    const {darkMode, toggleTheme} = useContext(ThemeContext);
 
     // Filters
     const [skillFilter, setSkillFilter] = useState("All");
@@ -72,18 +72,6 @@ const AdventuringFeatList = () => {
 
         setFilteredFeats(filtered);
     }, [search, skillFilter, toolFilter, classFilter, spellcastingFilter, feats]);
-
-    // Apply theme when component mounts
-    useEffect(() => {
-        document.body.setAttribute("data-theme", darkMode ? "dark" : "light");
-    }, [darkMode]);
-
-    const toggleTheme = () => {
-        const newTheme = darkMode ? "light" : "dark";
-        setDarkMode(!darkMode);
-        localStorage.setItem("theme", newTheme);
-        document.body.setAttribute("data-theme", newTheme);
-    };
 
     const toggleDescription = (index) => {
         setFilteredFeats((prevFeats) =>

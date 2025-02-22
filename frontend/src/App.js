@@ -1,24 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { ThemeContext } from "./ThemeContext";
 import "./App.css";
 
-const App = () => {
-    // Get stored theme preference
-    const storedTheme = localStorage.getItem("theme") || "dark";
-    const [darkMode, setDarkMode] = useState(storedTheme === "dark");
-
-    // Apply the theme on component mount
-    useEffect(() => {
-        document.body.setAttribute("data-theme", darkMode ? "dark" : "light");
-    }, [darkMode]);
-
-    // Toggle theme function
-    const toggleTheme = () => {
-        const newTheme = darkMode ? "light" : "dark";
-        setDarkMode(!darkMode);
-        localStorage.setItem("theme", newTheme);
-        document.body.setAttribute("data-theme", newTheme);
-    };
+function App() {
+    const {darkMode, toggleTheme} = useContext(ThemeContext);
 
     return (
         <div className="container">

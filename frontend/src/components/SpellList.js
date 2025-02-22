@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { ThemeContext } from "../ThemeContext";
 import "./SpellList.css";
 
 function SpellList() {
@@ -10,8 +11,7 @@ function SpellList() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("spell_level");
   const [sortDirection, setSortDirection] = useState("asc");
-  const storedTheme = localStorage.getItem("theme") || "dark";
-  const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
+  const {darkMode, toggleTheme} = useContext(ThemeContext);
 
   // Filter states
   const [filters, setFilters] = useState({
@@ -73,17 +73,6 @@ function SpellList() {
 
     setFilteredSpells(filtered);
   }, [search, spells, filters]);
-
-  useEffect(() => {
-    document.body.setAttribute("data-theme", darkMode ? "dark" : "light");
-    }, [darkMode]);
-
-  const toggleTheme = () => {
-    const newTheme = darkMode ? "light" : "dark";
-    setDarkMode(!darkMode);
-    localStorage.setItem("theme", newTheme);
-    document.body.setAttribute("data-theme", newTheme);
-  }
 
   // Toggle spell description visibility
   const toggleDescription = (index) => {
