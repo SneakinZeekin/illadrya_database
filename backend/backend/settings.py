@@ -31,6 +31,7 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "illadryadatabase-production.up.railway.app",
+    "api.illadrya-database.com",
 ]
 
 
@@ -71,7 +72,11 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React frontend
+    "http://localhost:3000",  
+    "https://illadrya-database.com",  
+    "https://www.illadrya-database.com",
+    "https://api.illadrya-database.com",
+
 ]
 
 ROOT_URLCONF = 'backend.urls'
