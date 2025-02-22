@@ -30,10 +30,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "illadryadatabase-production.up.railway.app",
+    "illadrya-database.com",
+    "www.illadrya-database.com"
     "api.illadrya-database.com",
 ]
-
 
 # Application definition
 
