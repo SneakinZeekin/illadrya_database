@@ -25,7 +25,7 @@ function SpellList() {
 
   useEffect(() => {
     // Fetch spell data
-    const token = process.env.AUTH_TOKEN;
+    const token = process.env.REACT_APP_AUTH_TOKEN;
 
     axios.get(`${process.env.REACT_APP_API_URL}/spells/spells/`, {
       headers: {
@@ -48,7 +48,7 @@ function SpellList() {
   }, []);
 
   useEffect(() => {
-    const token = process.env.AUTH_TOKEN;
+    const token = process.env.REACT_APP_AUTH_TOKEN;
 
     axios.get(`${process.env.REACT_APP_API_URL}/spells/classes/`, {
       headers: {

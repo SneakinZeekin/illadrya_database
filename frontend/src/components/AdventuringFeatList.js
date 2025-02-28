@@ -25,7 +25,7 @@ function AdventuringFeatList() {
 
     // Fetch feats from API
     useEffect(() => {
-        const token = process.env.AUTH_TOKEN;
+        const token = process.env.REACT_APP_AUTH_TOKEN;
 
         axios.get(`${process.env.REACT_APP_API_URL}/adventuring-feats/feats/`, {
             headers: {
