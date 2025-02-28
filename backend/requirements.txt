@@ -1,6 +1,7 @@
 # Core Django & REST Framework
 Django>=5.1.6
 djangorestframework
+djangorestframework-authtoken
 
 # PostgreSQL Database Support
 psycopg2-binary
