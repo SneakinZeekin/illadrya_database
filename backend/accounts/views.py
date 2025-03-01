@@ -16,13 +16,13 @@ from rest_framework.decorators import api_view
 @api_view(["GET"])
 def check_username(request):
     username = request.GET.get("username", "")
-    exists = User.objects.filter(username=username).exists()
+    exists = User.objects.filter(username__iexact=username).exists()
     return Response({"available": not exists})
 
 @api_view(["GET"])
 def check_email(request):
     email = request.GET.get("email", "")
-    exists = User.objects.filter(email=email).exists()
+    exists = User.objects.filter(email__iexact=email).exists()
     return Response({"available": not exists})
 
 class RegisterView(generics.CreateAPIView):
