@@ -10,7 +10,6 @@ from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
-from .serializers import RegisterSerializer
 from rest_framework.decorators import api_view
 
 @api_view(["GET"])
@@ -31,14 +30,14 @@ class RegisterView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save()
+        user.is_active = False
+        user.save()
 
-        # Generate email verification token
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         domain = get_current_site(self.request).domain
         verification_link = f"http://{domain}/api/auth/verify-email/{uid}/{token}/"
 
-        # Send verification email
         send_mail(
             "Verify Your Email",
             "",
@@ -56,7 +55,6 @@ class RegisterView(generics.CreateAPIView):
             </html>
             """,
         )
-
 
         return Response({"message": "User registered successfully. Please verify your email."}, status=status.HTTP_201_CREATED)
 
@@ -76,7 +74,6 @@ class VerifyEmailView(APIView):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             return Response({"error": "Invalid user."}, status=status.HTTP_400_BAD_REQUEST)
 
-
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -84,8 +81,12 @@ class LoginView(APIView):
         user = User.objects.filter(username=username).first()
         
         if user and user.check_password(password):
+            if not user.is_active:
+                return Response({'error': 'Please verify your email before logging in.'}, status=400)
+
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key, 'user': UserSerializer(user).data})
+
         return Response({'error': 'Invalid credentials'}, status=400)
 
 class LogoutView(APIView):

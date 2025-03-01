@@ -9,6 +9,7 @@ class UserProfile(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    is_email_verified = models.BooleanField(default=False) 
     role = models.CharField(max_length=10, choices=USER_ROLES, default='base')
 
     def __str__(self):
