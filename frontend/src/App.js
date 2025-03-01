@@ -1,32 +1,51 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
-import { ThemeContext } from "./ThemeContext";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import SpellList from "./components/SpellList";
+import FeatList from "./components/AdventuringFeatList";
+import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage";
 import "./App.css";
 
 function App() {
-    const {darkMode, toggleTheme} = useContext(ThemeContext);
+    const [token, setToken] = useState(localStorage.getItem("authToken") || "");
+
+    useEffect(() => {
+        localStorage.setItem("authToken", token);
+    }, [token]);
+
+    const handleLogout = () => {
+        setToken("");
+        localStorage.removeItem("authToken");
+    };
 
     return (
-        <div className="container">
-            {/* Theme Toggle Switch */}
-            <div className="theme-toggle">
-                <label className="switch">
-                    <input type="checkbox" checked={darkMode} onChange={toggleTheme} />
-                    <span className="slider round"></span>
-                </label>
-                <span className="theme-label">{darkMode ? "Dark Mode" : "Light Mode"}</span>
-            </div>
+        <>
+            {token && (
+                <div className="logout-container">
+                    <button className="logout-button" onClick={handleLogout}>
+                        Logout
+                    </button>
+                </div>
+            )}
 
-            {/* Main Title */}
-            <h1 className="main-title">Illadrya Database</h1>
-
-            {/* Navigation Links */}
-            <div className="nav-links">
-                <Link to="/spells" className="nav-link">Spells</Link>
-                <Link to="/feats" className="nav-link">Adventuring Feats</Link>
-            </div>
-        </div>
+            <Routes>
+                {!token ? (
+                    <>
+                        <Route path="/login" element={<LoginPage setToken={setToken} />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route path="*" element={<Navigate to="/login" />} />
+                    </>
+                ) : (
+                    <>
+                        <Route path="/" element={<SpellList />} />
+                        <Route path="/spells" element={<SpellList />} />
+                        <Route path="/feats" element={<FeatList />} />
+                        <Route path="*" element={<Navigate to="/" />} />
+                    </>
+                )}
+            </Routes>
+        </>
     );
-};
+}
 
 export default App;
