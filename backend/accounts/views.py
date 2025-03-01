@@ -11,6 +11,19 @@ from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 from .serializers import RegisterSerializer
+from rest_framework.decorators import api_view
+
+@api_view(["GET"])
+def check_username(request):
+    username = request.GET.get("username", "")
+    exists = User.objects.filter(username=username).exists()
+    return Response({"available": not exists})
+
+@api_view(["GET"])
+def check_email(request):
+    email = request.GET.get("email", "")
+    exists = User.objects.filter(email=email).exists()
+    return Response({"available": not exists})
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
