@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserProfile
 
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.CharField(source="profile.role", read_only=True) 
