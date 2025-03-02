@@ -82,7 +82,7 @@ class LoginView(APIView):
         
         if user and user.check_password(password):
             if not user.is_active:
-                return Response({'error': 'Please verify your email before logging in.'}, status=400)
+                return Response({'error': 'Please verify your email before logging in.'}, status=403)
 
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key, 'user': UserSerializer(user).data})
