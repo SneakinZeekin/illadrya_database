@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import HomePage from "./components/HomePage"; 
 import SpellList from "./components/SpellList";
 import FeatList from "./components/AdventuringFeatList";
 import LoginPage from "./components/LoginPage";
@@ -37,7 +38,7 @@ function App() {
                     </>
                 ) : (
                     <>
-                        <Route path="/" element={<SpellList />} />
+                        <Route path="/" element={<HomePage />} />
                         <Route path="/spells" element={<SpellList />} />
                         <Route path="/feats" element={<FeatList />} />
                         <Route path="*" element={<Navigate to="/" />} />

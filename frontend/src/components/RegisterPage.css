@@ -1,0 +1,12 @@
+.error-message-reg {
+    color: red;
+    font-size: 14px;
+    background: var(--card-background);
+    padding: 0px;
+    text-align: left;
+    margin-top: 0px; 
+    margin-bottom: 5px; 
+    margin-left: 3px;
+    line-height: 0;
+    font-weight: bold;
+  }
